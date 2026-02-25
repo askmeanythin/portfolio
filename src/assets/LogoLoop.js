@@ -189,9 +189,7 @@ export const LogoLoop = memo(
     }, [isVertical]);
 
     useResizeObserver(updateDimensions, [containerRef, seqRef], [logos, gap, logoHeight, isVertical]);
-
     useImageLoader(seqRef, updateDimensions, [logos, gap, logoHeight, isVertical]);
-
     useAnimationLoop(trackRef, targetVelocity, seqWidth, seqHeight, isHovered, effectiveHoverSpeed, isVertical);
 
     const cssVariables = useMemo(
@@ -220,6 +218,7 @@ export const LogoLoop = memo(
     const handleMouseEnter = useCallback(() => {
       if (effectiveHoverSpeed !== undefined) setIsHovered(true);
     }, [effectiveHoverSpeed]);
+
     const handleMouseLeave = useCallback(() => {
       if (effectiveHoverSpeed !== undefined) setIsHovered(false);
     }, [effectiveHoverSpeed]);
@@ -228,7 +227,7 @@ export const LogoLoop = memo(
       (item, key) => {
         if (renderItem) {
           return (
-            <li className="logoloop__item" key={key} role="listitem">
+            <li className="logoloop__item" key={key}>  {/* ✅ removed role="listitem" */}
               {renderItem(item, key)}
             </li>
           );
@@ -267,7 +266,7 @@ export const LogoLoop = memo(
           content
         );
         return (
-          <li className="logoloop__item" key={key} role="listitem">
+          <li className="logoloop__item" key={key}>  {/* ✅ removed role="listitem" */}
             {itemContent}
           </li>
         );
@@ -281,7 +280,7 @@ export const LogoLoop = memo(
           <ul
             className="logoloop__list"
             key={`copy-${copyIndex}`}
-            role="list"
+            /* ✅ removed role="list" */
             aria-hidden={copyIndex > 0}
             ref={copyIndex === 0 ? seqRef : undefined}
           >

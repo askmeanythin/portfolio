@@ -21,6 +21,7 @@ const PillNav = ({
   const logoRef = useRef(null);
   const navItemsRef = useRef(null);
 
+  // ✅ Fixed: added ease and initialLoadAnimation to dependency array
   useEffect(() => {
     circleRefs.current.forEach((circle, i) => {
       if (!circle?.parentElement) return;
@@ -70,7 +71,7 @@ const PillNav = ({
       gsap.fromTo(logoRef.current, { scale: 0 }, { scale: 1, duration: 0.5 });
       gsap.fromTo(navItemsRef.current, { opacity: 0 }, { opacity: 1, duration: 0.5 });
     }
-  }, [items]);
+  }, [items, ease, initialLoadAnimation]); // ✅ was just [items]
 
   const cssVars = {
     "--base": baseColor,
