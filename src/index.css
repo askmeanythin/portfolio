@@ -1,3 +1,5 @@
+
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -41,4 +43,116 @@ body {
 
 .real-page section {
   margin-bottom: 200px;
+}
+
+
+/* ================= ABOUT SECTION ================= */
+
+/* ================= ABOUT ================= */
+
+.about-section {
+  min-height: unset;        /* ✅ Remove forced full-height */
+  padding: 60px 20px;       /* ✅ Was 140px — reduce top/bottom breathing room */
+  display: flex;
+  justify-content: center;
+}
+
+.about-container {
+  max-width: 1000px;
+  width: 100%;
+}
+
+.about-title {
+  font-size: 56px;      /* Bigger heading */
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.about-name {
+  font-weight: 800;
+}
+
+.about-text {
+  font-size: 24px;      /* 🔥 Bigger text for dotted bg */
+  line-height: 1.9;
+  margin-bottom: 28px;
+}
+
+/* 🔥 Refined inline pill */
+.inline-pill {
+  display: inline-block;
+  padding: 2px 8px;          /* Smaller padding */
+  margin: 0 3px;
+  border-radius: 9999px;
+
+  background: #ffffff;
+  color: #000000;
+  border: 3px solid #000000; /* Thinner border */
+
+  font-size: 14px;
+  font-weight: 600;
+}
+.real-page {
+  scroll-snap-type: y mandatory;
+}
+
+.section {
+  scroll-snap-align: center;
+}
+/* ✅ Reduce the gap after every section */
+.real-page section {
+  margin-bottom: 50px;      /* Was 200px */
+}
+
+/* ================= SERVICES SECTION ================= */
+.services-section {
+  padding: 60px 20px;
+}
+
+.section-title {
+  font-size: 56px;
+  font-weight: 700;
+  margin-bottom: 40px;
+  color: #000;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px;
+}
+
+/* Force StarBorder to fill grid cell */
+.project-card-outer {
+  display: block !important;
+  width: 100%;
+  cursor: pointer;
+}
+
+/* Override StarBorder inner defaults */
+.project-card-outer .inner-content {
+  text-align: left;
+  padding: 28px 30px;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.project-card-inner {
+  width: 100%;
+}
+
+.project-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 12px 0;
+}
+
+.project-desc {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #aaaaaa;
+  margin: 0;
 }
