@@ -202,7 +202,7 @@ function App() {
           const elementCenter = absoluteTop + rect.height / 2;
 
           window.scrollTo({
-            top: elementCenter - window.innerHeight * 0.6,
+            top: elementCenter - window.innerHeight * 0.52 ,
             behavior: "smooth",
           });
 
