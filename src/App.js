@@ -40,8 +40,8 @@ function App() {
   const [entered, setEntered] = useState(false);
   const [zoomingOut, setZoomingOut] = useState(false);
 
-  const notchSize = 80;         // ✅ less scroll per zoom step
-  const triggerZoom = 10000;    // ✅ second page at exactly 10000%
+  const notchSize = 120;        // ✅ was 150 — more responsive
+  const triggerZoom = 9112;
 
   // ================= LOGO DATA =================
   const techLogos = [
@@ -127,21 +127,23 @@ function App() {
     const W = window.innerWidth;
     const H = window.innerHeight;
 
+    // ✅ Device classification
     const isPC = W >= 1024 && W / H >= 1.4;
     const isMobile = W <= 768;
     const isLowGPU = !isPC;
 
-    // ✅ Transition smoothness per device
+    // ✅ Smooth transition tuned per device
     if (hero) {
       hero.style.transition = isLowGPU
         ? "transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94)"
         : "transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
     }
 
+    // ✅ Zoom params per device
     const zoomStepDesktop = 3.2;
-    const zoomStepMobile = 1.5;     // ✅ gentler per swipe
-    const mobileThreshold = 8;      // ✅ lighter swipe to trigger
-    const mobileTrigger = 10000;    // ✅ 10000% for mobile too
+    const zoomStepMobile = 1.8;     // was 2.8 — smoother on touch
+    const mobileThreshold = 12;     // was 25 — more sensitive
+    const mobileTrigger = 3200;
     const mobileCap = 35;
 
     // ===== DESKTOP WHEEL =====
@@ -184,7 +186,6 @@ function App() {
           heroRef.current.style.transform =
             `scale(${scaleRef.current.toFixed(3)})`;
 
-          // ✅ triggers at 10000%
           if (scaleRef.current * 100 >= triggerZoom) {
             setEntered(true);
             setTimeout(() => window.scrollTo(0, 1), 50);
@@ -195,7 +196,7 @@ function App() {
       }
     };
 
-    // ===== TOUCH =====
+    // ===== TOUCH (mobile/tablet) =====
     let touchStartY = 0;
     let lastTouchTime = 0;
 
@@ -211,7 +212,7 @@ function App() {
       const delta = touchStartY - currentY;
       const now = Date.now();
 
-      // ✅ 60ms throttle — GPU relief
+      // ✅ Throttle to every 60ms — reduces GPU repaint pressure
       if (now - lastTouchTime < 60) return;
       lastTouchTime = now;
 
@@ -222,7 +223,6 @@ function App() {
         heroRef.current.style.transform =
           `scale(${scaleRef.current.toFixed(3)})`;
 
-        // ✅ 10000% trigger
         if (scaleRef.current * 100 >= mobileTrigger) {
           setEntered(true);
           setTimeout(() => window.scrollTo(0, 1), 50);
@@ -266,9 +266,9 @@ function App() {
     const W = window.innerWidth;
     const H = window.innerHeight;
 
-    // ✅ Only true PC-like screens
+    // ✅ Only PC-like screens: wide + landscape aspect ratio
     const isPC = W >= 1024 && W / H >= 1.4;
-    if (!isPC) return;
+    if (!isPC) return;  // ← exits for mobile, tablet, odd dimensions
 
     const tryAutoScroll = (ref, factor) => {
       const el = ref.current;
