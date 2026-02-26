@@ -281,8 +281,8 @@ body {
 
   .real-page {
     padding: 60px 20px 0px 20px;
-    min-height: 100vh;        /* ✅ no excess blank space on mobile */
-    scroll-snap-type: none;   /* ✅ disable snap on mobile — feels more natural */
+    min-height: 100vh;
+    scroll-snap-type: none;
   }
 
   .about-section {
@@ -364,7 +364,7 @@ body {
 
   .real-page {
     padding: 80px 50px 0px 50px;
-    scroll-snap-type: none;   /* ✅ disable snap on tablet too */
+    scroll-snap-type: none;
   }
 
   .about-title {

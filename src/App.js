@@ -128,7 +128,6 @@ function App() {
     const isMobile = W <= 768;
     const isLowGPU = !isPC;
 
-    // ✅ Transition per device
     if (hero) {
       hero.style.transition = isLowGPU
         ? "transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)"
@@ -141,6 +140,7 @@ function App() {
     const handleWheel = (e) => {
       if (isMobile) return;
 
+      // ✅ Only zoom out when truly at top of page
       if (entered && window.scrollY <= 0 && e.deltaY < 0) {
         e.preventDefault();
 
@@ -187,36 +187,36 @@ function App() {
       }
     };
 
-    // ===== TOUCH — ONE SWIPE TRIGGERS FULL ZOOM =====
+    // ===== TOUCH =====
     let touchStartY = 0;
-    let touchTriggered = false;   // ✅ prevents double trigger
+    let touchStartScrollY = 0;   // ✅ snapshot scrollY when finger lands
+    let touchTriggered = false;
 
     const handleTouchStart = (e) => {
       touchStartY = e.touches[0].clientY;
+      touchStartScrollY = window.scrollY;  // ✅ capture scroll at touch start
       touchTriggered = false;
     };
 
     const handleTouchMove = (e) => {
       if (!isMobile) return;
-      if (touchTriggered) return;   // ✅ only fire once per swipe
+      if (touchTriggered) return;
 
       const currentY = e.touches[0].clientY;
-      const delta = touchStartY - currentY;
+      const delta = touchStartY - currentY; // positive = swipe up
 
-      // ✅ Swipe UP even slightly → instantly zoom to 10000% and enter
+      // ✅ ZOOM IN — swipe up on hero page
       if (!entered && delta > 10) {
         touchTriggered = true;
 
-        // ✅ Animate zoom in steps using RAF for smooth visual effect
-        const targetScale = 100; // 100 * 100 = 10000%
+        const targetScale = 100;
         const startScale = scaleRef.current;
-        const duration = 600; // ms
+        const duration = 600;
         const startTime = performance.now();
 
         const animateZoom = (now) => {
           const elapsed = now - startTime;
           const progress = Math.min(elapsed / duration, 1);
-          // ease-in-out curve
           const ease = progress < 0.5
             ? 2 * progress * progress
             : -1 + (4 - 2 * progress) * progress;
@@ -235,10 +235,17 @@ function App() {
         };
 
         requestAnimationFrame(animateZoom);
+        return;
       }
 
-      // ✅ Swipe DOWN at top → zoom back out instantly and return to hero
-      if (entered && window.scrollY <= 0 && delta < -10) {
+      // ✅ ZOOM OUT — only if:
+      // finger started at scroll top AND page is still at top AND swiping down
+      if (
+        entered &&
+        touchStartScrollY === 0 &&   // ✅ was at top when touch began
+        window.scrollY === 0 &&      // ✅ still at top now
+        delta < -10                  // ✅ swiping down
+      ) {
         touchTriggered = true;
 
         const startScale = scaleRef.current;
@@ -268,6 +275,7 @@ function App() {
         };
 
         requestAnimationFrame(animateZoomOut);
+        return;
       }
     };
 

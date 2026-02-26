@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
 
-    <!-- ✅ Viewport — must be only once, inside head -->
+    <!-- ✅ Viewport — once, inside head -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
     <!-- ✅ Tab icon -->
@@ -12,31 +12,40 @@
     <!-- ✅ Tab title -->
     <title>Priyanshu Gautam</title>
 
-    <!-- ✅ SEO basics -->
+    <!-- ✅ SEO -->
     <meta name="description" content="Priyanshu Gautam — Computer Science student at VIT Vellore, passionate about Cybersecurity, Ethical Hacking, and building interactive web experiences." />
     <meta name="author" content="Priyanshu Gautam" />
     <meta name="keywords" content="Priyanshu Gautam, Portfolio, Cybersecurity, Ethical Hacking, VIT Vellore, React, Web Developer" />
 
-    <!-- ✅ Open Graph — looks good when shared on WhatsApp, LinkedIn etc -->
+    <!-- ✅ Open Graph -->
     <meta property="og:title" content="Priyanshu Gautam — Portfolio" />
     <meta property="og:description" content="CS Student | Cybersecurity & Ethical Hacking | VIT Vellore" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="/favicon.png" />
 
-    <!-- ✅ Disable pull-to-refresh + overscroll via meta for older browsers -->
+    <!-- ✅ PWA / iOS -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
     <style>
-      /* ✅ Earliest possible overscroll disable — before CSS loads */
-      html, body {
+      /*
+        ✅ Overscroll fix applied before any CSS loads
+        — html has NO overflow:hidden so iOS touch events work
+        — body handles overflow-x only
+      */
+      html {
+        overscroll-behavior-y: none;
+        overscroll-behavior-x: none;
+        margin: 0;
+        padding: 0;
+      }
+      body {
         overscroll-behavior-y: none;
         overscroll-behavior-x: none;
         overflow-x: hidden;
         margin: 0;
         padding: 0;
-        height: 100%;
       }
     </style>
   </head>
