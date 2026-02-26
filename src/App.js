@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Analytics } from "@vercel/analytics/react";
 import "./index.css";
 
 import PillNav from "./assets/PillNav";
@@ -291,6 +292,7 @@ function App() {
   return (
     <ClickSpark sparkColor="#000" sparkSize={10} sparkRadius={20} sparkCount={10} duration={500}>
       <>
+        <Analytics />
         {/* HERO */}
         <div className={`hero ${entered && !zoomingOut ? "hero-hidden" : ""}`}>
           <h1 ref={heroRef} className="name">
