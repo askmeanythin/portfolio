@@ -1,17 +1,25 @@
+/* ===== BASE RESET ===== */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
   background-color: white;
   background-image: radial-gradient(black 1px, transparent 1px);
   background-size: 20px 20px;
+  overflow-x: hidden;
 }
 
+/* ===== HERO ===== */
 .hero {
   position: fixed;
   inset: 0;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
   z-index: 10;
 }
 
@@ -20,24 +28,29 @@ body {
 }
 
 .name {
-  font-size: 150px;
+  font-size: clamp(2.5rem, 10vw, 150px);
   font-weight: 700;
   color: black;
   transform-origin: center;
   transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  text-align: center;
+  white-space: nowrap;
+  padding: 0 10px;
 }
 
 .g {
   display: inline-block;
 }
 
+/* ===== REAL PAGE ===== */
 .real-page {
   position: relative;
   z-index: 5;
-  padding: 80px 100px 0px 100px;  /* ✅ 0 bottom padding */
+  padding: 80px 100px 0px 100px;
   min-height: 250vh;
   font-size: 24px;
   scroll-snap-type: y mandatory;
+  overflow-x: hidden;
 }
 
 .real-page section {
@@ -48,7 +61,12 @@ body {
   scroll-snap-align: center;
 }
 
-/* ================= ABOUT ================= */
+.real-page > *:last-child {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* ===== ABOUT ===== */
 .about-section {
   min-height: unset;
   padding: 60px 20px;
@@ -62,17 +80,35 @@ body {
 }
 
 .about-title {
-  font-size: 56px;
+  font-size: clamp(1.8rem, 4vw, 56px);
   font-weight: 600;
   margin-bottom: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3em;
+  line-height: 1.2;
 }
 
 .about-name {
   font-weight: 800;
 }
 
+.about-name-gradient {
+  font-size: inherit;
+  font-weight: 800;
+  display: inline !important;
+  vertical-align: middle;
+}
+
+.about-name-gradient .text-content {
+  font-size: inherit;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
 .about-text {
-  font-size: 24px;
+  font-size: clamp(0.95rem, 2vw, 24px);
   line-height: 1.9;
   margin-bottom: 28px;
 }
@@ -85,20 +121,50 @@ body {
   background: #ffffff;
   color: #000000;
   border: 3px solid #000000;
-  font-size: 14px;
+  font-size: clamp(11px, 1.2vw, 14px);
   font-weight: 600;
 }
 
-/* ================= SERVICES ================= */
+/* ===== SERVICES ===== */
 .services-section {
   padding: 10px 10px;
 }
 
+.services-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
 .section-title {
-  font-size: 56px;
+  font-size: clamp(1.8rem, 4vw, 56px);
   font-weight: 700;
-  margin-bottom: 40px;
+  margin-bottom: 0;
   color: #000;
+}
+
+.resume-btn {
+  display: inline-block;
+  padding: 10px 24px;
+  border: 2px solid #000;
+  border-radius: 999px;
+  color: #000;
+  background: transparent;
+  font-size: clamp(0.8rem, 1.5vw, 1rem);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.25s ease, color 0.25s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.resume-btn:hover {
+  background: #000;
+  color: #fff;
 }
 
 .projects-grid {
@@ -127,22 +193,22 @@ body {
 }
 
 .project-name {
-  font-size: 22px;
+  font-size: clamp(0.95rem, 1.8vw, 22px);
   font-weight: 700;
   color: #ffffff;
   margin: 0 0 12px 0;
 }
 
 .project-desc {
-  font-size: 15px;
+  font-size: clamp(0.8rem, 1.3vw, 15px);
   line-height: 1.7;
   color: #aaaaaa;
   margin: 0;
 }
 
-/* ================= CONTACT ================= */
+/* ===== CONTACT ===== */
 .contact-section {
-  padding: 60px 20px 20px 20px;  /* ✅ single clean rule */
+  padding: 60px 20px 20px 20px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -153,20 +219,23 @@ body {
 }
 
 .contact-heading {
-  font-size: 72px;
+  font-size: clamp(2rem, 6vw, 72px);
   font-weight: 700;
   color: #000;
+  text-align: center;
 }
 
 .contact-icons {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 60px;
   align-items: center;
 }
 
 .contact-icon-link {
   color: #000;
-  font-size: 60px;
+  font-size: clamp(2rem, 5vw, 60px);
   transition: transform 0.2s ease, opacity 0.2s ease;
   display: flex;
 }
@@ -176,7 +245,7 @@ body {
   opacity: 0.7;
 }
 
-/* ================= FOOTER ================= */
+/* ===== FOOTER ===== */
 .footer {
   text-align: center;
   padding: 20px;
@@ -186,30 +255,21 @@ body {
   margin-bottom: 0;
   padding-bottom: 0;
 }
-.real-page > *:last-child {
-  margin-bottom: 0 !important;
-  padding-bottom: 0 !important;
-}
 
-/* ================= RESPONSIVE / MOBILE ================= */
+/* ===== MOBILE (max 768px) ===== */
 @media (max-width: 768px) {
-
-  /* Hero name fits screen */
   .name {
-    font-size: 13vw;          /* ✅ auto scales to screen width */
+    font-size: 13vw;
     text-align: center;
     padding: 0 10px;
-    word-break: keep-all;     /* ✅ never breaks mid-word */
-    white-space: nowrap;      /* ✅ keeps on one line if it fits */
-    word-spacing: normal;
+    word-break: keep-all;
+    white-space: nowrap;
   }
 
-  /* Real page padding */
   .real-page {
-    padding: 60px 20px 0px 20px; /* ← was 80px 100px */
+    padding: 60px 20px 0px 20px;
   }
 
-  /* About section */
   .about-section {
     padding: 30px 10px;
   }
@@ -227,18 +287,26 @@ body {
     font-size: 12px;
   }
 
-  /* Services section */
   .services-section {
     padding: 10px 5px;
   }
 
-  .section-title {
-    font-size: 36px;
+  .services-header {
+    flex-direction: row;        /* keeps Resume on same line */
+    align-items: center;
   }
 
-  /* Cards stack to 1 column on mobile */
+  .section-title {
+    font-size: 32px;
+  }
+
+  .resume-btn {
+    padding: 8px 16px;
+    font-size: 0.82rem;
+  }
+
   .projects-grid {
-    grid-template-columns: 1fr; /* ← was repeat(2, 1fr) */
+    grid-template-columns: 1fr; /* single column */
   }
 
   .project-name {
@@ -249,7 +317,6 @@ body {
     font-size: 13px;
   }
 
-  /* Contact section */
   .contact-section {
     padding: 30px 20px 10px 20px;
     gap: 30px;
@@ -257,33 +324,31 @@ body {
   }
 
   .contact-heading {
-    font-size: 42px; /* ← was 72px */
+    font-size: 42px;
   }
 
   .contact-icons {
-    gap: 35px;
+    gap: 30px;
   }
 
   .contact-icon-link {
-    font-size: 44px; /* ← was 60px */
+    font-size: 44px;
   }
 
-  /* Footer */
   .footer {
     font-size: 12px;
     padding: 10px;
   }
 }
 
-/* ================= TABLET ================= */
+/* ===== TABLET (769px–1024px) ===== */
 @media (min-width: 769px) and (max-width: 1024px) {
-
   .name {
     font-size: 90px;
   }
 
   .real-page {
-    padding: 80px 50px 0px 50px; /* ← reduce side padding */
+    padding: 80px 50px 0px 50px;
   }
 
   .about-title {
@@ -295,63 +360,22 @@ body {
   }
 
   .projects-grid {
-    grid-template-columns: 1fr; /* ← stack cards on tablet too */
+    grid-template-columns: 1fr; /* stack on tablet */
+  }
+
+  .section-title {
+    font-size: 44px;
   }
 
   .contact-heading {
     font-size: 56px;
   }
 
+  .contact-icons {
+    gap: 40px;
+  }
+
   .contact-icon-link {
     font-size: 50px;
   }
-}
-/* ✅ GradientText name sizing — responsive */
-.about-name-gradient {
-  font-size: inherit;       /* matches about-title size */
-  font-weight: 800;
-  display: inline-flex;
-  vertical-align: middle;
-}
-
-.about-name-gradient .text-content {
-  font-size: inherit;
-  font-weight: 800;
-  line-height: 1.2;
-}
-
-@media (max-width: 768px) {
-  .about-name-gradient {
-    font-size: inherit;     /* auto scales with about-title on mobile */
-  }
-}
-.about-name-gradient {
-  display: inline !important;
-}
-.services-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  margin-bottom: 2rem;
-}
-
-.resume-btn {
-  display: inline-block;
-  padding: 10px 24px;
-  border: 2px solid #000;
-  border-radius: 999px;        /* ✅ curved rectangle (pill shape) */
-  color: #000;
-  background: transparent;
-  font-size: 1rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background 0.25s ease, color 0.25s ease;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.resume-btn:hover {
-  background: #000;
-  color: #fff;
 }

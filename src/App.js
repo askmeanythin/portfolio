@@ -5,7 +5,7 @@ import PillNav from "./assets/PillNav";
 import ClickSpark from "./assets/ClickSpark";
 import LogoLoop from "./assets/LogoLoop";
 import StarBorder from "./assets/StarBorder";
-import GradientText from "./assets/GradientText"; // ✅ new
+import GradientText from "./assets/GradientText";
 import thmLogo from "./assets/tryhackme.svg";
 import htbLogo from "./assets/HTB.webp";
 import logo from "./assets/check.png";
@@ -40,8 +40,7 @@ function App() {
   const [entered, setEntered] = useState(false);
   const [zoomingOut, setZoomingOut] = useState(false);
 
-  const notchSize = 150;
-  const zoomStep = 4.5;
+  const notchSize = 120;        // ✅ was 150 — more responsive
   const triggerZoom = 9112;
 
   // ================= LOGO DATA =================
@@ -125,8 +124,29 @@ function App() {
       hero.style.transformOrigin = `${originX}% 50%`;
     }
 
-    const isMobile = window.innerWidth <= 768;
+    const W = window.innerWidth;
+    const H = window.innerHeight;
 
+    // ✅ Device classification
+    const isPC = W >= 1024 && W / H >= 1.4;
+    const isMobile = W <= 768;
+    const isLowGPU = !isPC;
+
+    // ✅ Smooth transition tuned per device
+    if (hero) {
+      hero.style.transition = isLowGPU
+        ? "transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94)"
+        : "transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+    }
+
+    // ✅ Zoom params per device
+    const zoomStepDesktop = 3.2;
+    const zoomStepMobile = 1.8;     // was 2.8 — smoother on touch
+    const mobileThreshold = 12;     // was 25 — more sensitive
+    const mobileTrigger = 3200;
+    const mobileCap = 35;
+
+    // ===== DESKTOP WHEEL =====
     const handleWheel = (e) => {
       if (isMobile) return;
 
@@ -136,7 +156,7 @@ function App() {
         zoomOutAccumRef.current += e.deltaY * -4;
 
         if (Math.abs(zoomOutAccumRef.current) >= notchSize) {
-          scaleRef.current /= zoomStep;
+          scaleRef.current /= zoomStepDesktop;
           scaleRef.current = Math.max(1, scaleRef.current);
 
           heroRef.current.style.transform =
@@ -150,7 +170,6 @@ function App() {
 
           zoomOutAccumRef.current = 0;
         }
-
         return;
       }
 
@@ -161,7 +180,7 @@ function App() {
         if (Math.abs(wheelAccumRef.current) >= notchSize) {
           const dir = Math.sign(wheelAccumRef.current);
 
-          scaleRef.current *= Math.pow(zoomStep, dir);
+          scaleRef.current *= Math.pow(zoomStepDesktop, dir);
           scaleRef.current = Math.max(1, scaleRef.current);
 
           heroRef.current.style.transform =
@@ -177,26 +196,29 @@ function App() {
       }
     };
 
+    // ===== TOUCH (mobile/tablet) =====
     let touchStartY = 0;
-    let touchDelta = 0;
-
-    const mobileZoomStep = 2.8;
-    const mobileTrigger = 3200;
-    const mobileThreshold = 25;
+    let lastTouchTime = 0;
 
     const handleTouchStart = (e) => {
       touchStartY = e.touches[0].clientY;
+      lastTouchTime = Date.now();
     };
 
     const handleTouchMove = (e) => {
       if (!isMobile) return;
 
       const currentY = e.touches[0].clientY;
-      touchDelta = touchStartY - currentY;
+      const delta = touchStartY - currentY;
+      const now = Date.now();
 
-      if (!entered && touchDelta > mobileThreshold) {
-        scaleRef.current *= mobileZoomStep;
-        scaleRef.current = Math.min(scaleRef.current, 35);
+      // ✅ Throttle to every 60ms — reduces GPU repaint pressure
+      if (now - lastTouchTime < 60) return;
+      lastTouchTime = now;
+
+      if (!entered && delta > mobileThreshold) {
+        scaleRef.current *= zoomStepMobile;
+        scaleRef.current = Math.min(scaleRef.current, mobileCap);
 
         heroRef.current.style.transform =
           `scale(${scaleRef.current.toFixed(3)})`;
@@ -209,8 +231,8 @@ function App() {
         touchStartY = currentY;
       }
 
-      if (entered && window.scrollY <= 0 && touchDelta < -mobileThreshold) {
-        scaleRef.current /= mobileZoomStep;
+      if (entered && window.scrollY <= 0 && delta < -mobileThreshold) {
+        scaleRef.current /= zoomStepMobile;
         scaleRef.current = Math.max(1, scaleRef.current);
 
         heroRef.current.style.transform =
@@ -240,6 +262,13 @@ function App() {
   // ================= AUTO CENTER SECTIONS =================
   useEffect(() => {
     if (!entered) return;
+
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+
+    // ✅ Only PC-like screens: wide + landscape aspect ratio
+    const isPC = W >= 1024 && W / H >= 1.4;
+    if (!isPC) return;  // ← exits for mobile, tablet, odd dimensions
 
     const tryAutoScroll = (ref, factor) => {
       const el = ref.current;
@@ -349,7 +378,6 @@ function App() {
               <div className="about-container">
                 <h1 className="about-title">
                   Hi, I'm{" "}
-                  {/* ✅ GradientText wrapping name — black/white/grey theme */}
                   <GradientText
                     colors={["#000000", "#554c4c", "#766262", "#4b3d3d", "#000000"]}
                     animationSpeed={2}
@@ -420,29 +448,6 @@ function App() {
                 ))}
               </div>
             </section>
-
-            <section ref={servicesRef} className="section services-section">
-              <h1 className="section-title">Services</h1>
-              <div className="projects-grid">
-                {projects.map((project, index) => (
-                  <StarBorder
-                    key={index}
-                    as="div"
-                    color="#8A8080"
-                    speed="2s"
-                    className="project-card-outer"
-                    onClick={() => console.log(`Clicked: ${project.name}`)}
-                  >
-                    <div className="project-card-inner">
-                      <h2 className="project-name">{project.name}</h2>
-                      <p className="project-desc">{project.description}</p>
-                    </div>
-                  </StarBorder>
-                ))}
-              </div>
-            </section>
-
-            
 
             {/* CONTACT */}
             <section ref={contactRef} className="section contact-section">
