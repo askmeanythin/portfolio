@@ -33,8 +33,6 @@ function App() {
   const scaleRef = useRef(1);
   const wheelAccumRef = useRef(0);
   const zoomOutAccumRef = useRef(0);
-  const wheelStartScrollYRef = useRef(0);
-
   const scrollTimerRef = useRef(null);
   const isAutoScrollingRef = useRef(false);
 
