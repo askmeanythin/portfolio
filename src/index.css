@@ -325,3 +325,33 @@ body {
     font-size: inherit;     /* auto scales with about-title on mobile */
   }
 }
+.about-name-gradient {
+  display: inline !important;
+}
+.services-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.resume-btn {
+  display: inline-block;
+  padding: 10px 24px;
+  border: 2px solid #000;
+  border-radius: 999px;        /* ✅ curved rectangle (pill shape) */
+  color: #000;
+  background: transparent;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.25s ease, color 0.25s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.resume-btn:hover {
+  background: #000;
+  color: #fff;
+}

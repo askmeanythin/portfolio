@@ -17,7 +17,8 @@ import {
   SiTypescript,
   SiTailwindcss,
   SiGithub,
-  SiLinkedin
+  SiLinkedin,
+  SiWhatsapp
 } from "react-icons/si";
 
 import { MdEmail } from "react-icons/md";
@@ -354,6 +355,7 @@ function App() {
                     animationSpeed={2}
                     showBorder={false}
                     className="about-name-gradient"
+                    style={{ display: "inline" }}
                   >
                     Priyanshu Gautam
                   </GradientText>
@@ -389,6 +391,37 @@ function App() {
 
             {/* SERVICES */}
             <section ref={servicesRef} className="section services-section">
+              <div className="services-header">
+                <h1 className="section-title">Services</h1>
+                <a
+                  href="/resume.pdf"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="resume-btn"
+                >
+                  Resume ↗
+                </a>
+              </div>
+              <div className="projects-grid">
+                {projects.map((project, index) => (
+                  <StarBorder
+                    key={index}
+                    as="div"
+                    color="#8A8080"
+                    speed="2s"
+                    className="project-card-outer"
+                    onClick={() => console.log(`Clicked: ${project.name}`)}
+                  >
+                    <div className="project-card-inner">
+                      <h2 className="project-name">{project.name}</h2>
+                      <p className="project-desc">{project.description}</p>
+                    </div>
+                  </StarBorder>
+                ))}
+              </div>
+            </section>
+
+            <section ref={servicesRef} className="section services-section">
               <h1 className="section-title">Services</h1>
               <div className="projects-grid">
                 {projects.map((project, index) => (
@@ -409,10 +442,12 @@ function App() {
               </div>
             </section>
 
+            
+
             {/* CONTACT */}
             <section ref={contactRef} className="section contact-section">
               <TextType
-                text={["Contact Me", "Open to Opportunities"]}
+                text={["Contact", "Open to Opportunities"]}
                 typingSpeed={75}
                 deletingSpeed={50}
                 pauseDuration={1500}
@@ -448,6 +483,16 @@ function App() {
                   title="GitHub"
                 >
                   <SiGithub />
+                </a>
+
+                <a
+                  href="https://wa.me/918506969006"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="contact-icon-link"
+                  title="WhatsApp"
+                >
+                  <SiWhatsapp />
                 </a>
               </div>
             </section>
