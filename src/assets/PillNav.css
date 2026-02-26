@@ -224,3 +224,24 @@
   background-color: var(--base);
   color: var(--hover-text, #fff);
 }
+@media (max-width: 768px) {
+  .pill-nav-container {
+    width: auto;
+    max-width: 95vw;        /* ✅ never wider than screen */
+  }
+
+  .pill-nav {
+    --nav-h: 32px;          /* ✅ was 40px — smaller height */
+    --pill-pad-x: 10px;     /* ✅ was 18px — less side padding */
+  }
+
+  .pill {
+    font-size: 12px;        /* ✅ was 16px — smaller text */
+  }
+
+  .pill-logo {
+    width: 30px;            /* ✅ was 40px — smaller logo */
+    height: 30px;
+    padding: 5px;
+  }
+}

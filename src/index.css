@@ -196,9 +196,12 @@ body {
 
   /* Hero name fits screen */
   .name {
-    font-size: 52px;
+    font-size: 13vw;          /* ✅ auto scales to screen width */
     text-align: center;
-    padding: 0 20px;
+    padding: 0 10px;
+    word-break: keep-all;     /* ✅ never breaks mid-word */
+    white-space: nowrap;      /* ✅ keeps on one line if it fits */
+    word-spacing: normal;
   }
 
   /* Real page padding */
