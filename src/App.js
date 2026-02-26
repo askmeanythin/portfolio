@@ -8,6 +8,7 @@ import StarBorder from "./assets/StarBorder";
 import thmLogo from "./assets/tryhackme.svg";
 import htbLogo from "./assets/HTB.webp";
 import logo from "./assets/check.png";
+import TextType from "./assets/TextType";
 
 import {
   SiReact,
@@ -17,6 +18,8 @@ import {
   SiGithub,
   SiLinkedin
 } from "react-icons/si";
+
+import { MdEmail } from "react-icons/md";
 
 function App() {
   const heroRef = useRef(null);
@@ -41,10 +44,10 @@ function App() {
 
   // ================= LOGO DATA =================
   const techLogos = [
-    { node: <SiGithub color="black" />, title: "Github", href: "https://github.com/YOUR_USERNAME" },
-    { node: <SiLinkedin color="black" />, title: "Linkedin", href: "https://linkedin.com/in/YOUR_USERNAME" },
-    { node: <img src={thmLogo} alt="TryHackMe" style={{ height: "40px" }} />, title: "TryHackMe", href: "https://tryhackme.com/p/YOUR_USERNAME" },
-    { node: <img src={htbLogo} alt="HackTheBox" style={{ height: "40px" }} />, title: "Hack The Box", href: "https://app.hackthebox.com/profile/YOUR_ID" },
+    { node: <SiGithub color="black" />, title: "Github", href: "https://github.com/askmeanythin" },
+    { node: <SiLinkedin color="black" />, title: "Linkedin", href: "https://www.linkedin.com/in/priyanshu-gautam06/" },
+    { node: <img src={thmLogo} alt="TryHackMe" style={{ height: "40px" }} />, title: "TryHackMe", href: "https://tryhackme.com/p/priya.x" },
+    { node: <img src={htbLogo} alt="HackTheBox" style={{ height: "40px" }} />, title: "Hack The Box", href: "https://profile.hackthebox.com/profile/019c999b-6339-719a-ba8a-26fefc465ada" },
     { node: <SiReact color="black" />, title: "React", hidden: true },
     { node: <SiNextdotjs color="black" />, title: "Next.js", hidden: true },
     { node: <SiTypescript color="black" />, title: "TypeScript", hidden: true },
@@ -55,16 +58,12 @@ function App() {
   const projects = [
     {
       name: "Smart Surveillance System (AI/ML-Based CCTV Platform)",
-      description: "Developed a real-time AI-powered surveillance system using TensorFlow, OpenCV, and MediaPipe to perform face recognition, suspicious activity detection, and vehicle speed monitoring with 85%+ accuracy.Optimized deep learning inference for edge devices, reducing latency by 40% while maintaining 30+ FPS performance.",
+      description: "Developed a real-time AI-powered surveillance system using TensorFlow, OpenCV, and MediaPipe to perform face recognition, suspicious activity detection, and vehicle speed monitoring with 85%+ accuracy. Optimized deep learning inference for edge devices, reducing latency by 40% while maintaining 30+ FPS performance.",
     },
     {
       name: "AI Task Automation System (LLM Integration)",
-      description: "Built an automated AI workflow system integrating locally fine-tuned LLMs (Phi-3.5, Qwen) via Ollama for intelligent task execution and process automation Engineered API integrations with Google Services (Gmail, Docs, Forms, Meet) to enable seamless automated data handling.",
+      description: "Built an automated AI workflow system integrating locally fine-tuned LLMs (Phi-3.5, Qwen) via Ollama for intelligent task execution and process automation. Engineered API integrations with Google Services (Gmail, Docs, Forms, Meet) to enable seamless automated data handling.",
     },
-   /* {
-      name: "Project Three",
-      description: "Third project — what it solves and who it's for.",
-    }, */
   ];
 
   // ================= NAVIGATION =================
@@ -176,40 +175,48 @@ function App() {
     return () => document.removeEventListener("wheel", handleWheel);
   }, [entered]);
 
-  // ================= AUTO CENTER ABOUT =================
+  // ================= AUTO CENTER SECTIONS =================
   useEffect(() => {
     if (!entered) return;
+
+    const tryAutoScroll = (ref, factor) => {
+      const el = ref.current;
+      if (!el) return false;
+
+      const rect = el.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+
+      const visibleAmount =
+        Math.min(rect.bottom, windowHeight) - Math.max(rect.top, 0);
+      const visibleRatio = visibleAmount / rect.height;
+
+      if (visibleRatio > 0.6 && visibleRatio < 1.0) {
+        isAutoScrollingRef.current = true;
+
+        const absoluteTop = rect.top + window.scrollY;
+        const elementCenter = absoluteTop + rect.height / 2;
+
+        window.scrollTo({
+          top: elementCenter - window.innerHeight * factor,
+          behavior: "smooth",
+        });
+
+        setTimeout(() => {
+          isAutoScrollingRef.current = false;
+        }, 800);
+
+        return true;
+      }
+      return false;
+    };
 
     const handleScroll = () => {
       if (isAutoScrollingRef.current) return;
 
       clearTimeout(scrollTimerRef.current);
       scrollTimerRef.current = setTimeout(() => {
-        const about = aboutRef.current;
-        if (!about) return;
-
-        const rect = about.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
-
-        const visibleAmount =
-          Math.min(rect.bottom, windowHeight) - Math.max(rect.top, 0);
-        const visibleRatio = visibleAmount / rect.height;
-
-        if (visibleRatio > 0.55 && visibleRatio < 1.0) {
-          isAutoScrollingRef.current = true;
-
-          const absoluteTop = rect.top + window.scrollY;
-          const elementCenter = absoluteTop + rect.height / 2;
-
-          window.scrollTo({
-            top: elementCenter - window.innerHeight * 0.52 ,
-            behavior: "smooth",
-          });
-
-          setTimeout(() => {
-            isAutoScrollingRef.current = false;
-          }, 800);
-        }
+        if (tryAutoScroll(aboutRef, 0.52)) return;
+        tryAutoScroll(servicesRef, 0.6);
       }, 150);
     };
 
@@ -333,9 +340,52 @@ function App() {
             </section>
 
             {/* CONTACT */}
-            <section ref={contactRef} className="section">
-              <h1>Contact</h1>
+            <section ref={contactRef} className="section contact-section">
+              <TextType
+                text={["Contact Me", "Open to Opportunities"]}
+                typingSpeed={75}
+                deletingSpeed={50}
+                pauseDuration={1500}
+                showCursor={true}
+                cursorCharacter="_"
+                className="contact-heading"
+              />
+
+              <div className="contact-icons">
+                <a
+                  href="mailto:priyanshu20012006@gmail.com"
+                  className="contact-icon-link"
+                  title="Gmail"
+                >
+                  <MdEmail />
+                </a>
+
+                <a
+                  href="https://www.linkedin.com/in/priyanshu-gautam06/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="contact-icon-link"
+                  title="LinkedIn"
+                >
+                  <SiLinkedin />
+                </a>
+
+                <a
+                  href="https://github.com/askmeanythin"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="contact-icon-link"
+                  title="GitHub"
+                >
+                  <SiGithub />
+                </a>
+              </div>
             </section>
+
+            {/* FOOTER */}
+            <footer className="footer">
+              Made with ❤️ by Priyanshu
+            </footer>
 
           </div>
         )}
