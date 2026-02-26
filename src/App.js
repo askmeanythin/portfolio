@@ -109,71 +109,143 @@ function App() {
   };
 
   // ================= ZOOM SYSTEM =================
-  useEffect(() => {
-    const hero = heroRef.current;
-    const g = hero?.querySelector(".g");
+useEffect(() => {
+  const hero = heroRef.current;
+  const g = hero?.querySelector(".g");
 
-    if (hero && g) {
-      const heroRect = hero.getBoundingClientRect();
-      const gRect = g.getBoundingClientRect();
-      const originX =
-        ((gRect.left - heroRect.left + gRect.width / 2) /
-          heroRect.width) *
-        100;
-      hero.style.transformOrigin = `${originX}% 50%`;
+  if (hero && g) {
+    const heroRect = hero.getBoundingClientRect();
+    const gRect = g.getBoundingClientRect();
+    const originX =
+      ((gRect.left - heroRect.left + gRect.width / 2) /
+        heroRect.width) *
+      100;
+    hero.style.transformOrigin = `${originX}% 50%`;
+  }
+
+  const isMobile = window.innerWidth <= 768;
+
+  /* ---------------- DESKTOP WHEEL ---------------- */
+  const handleWheel = (e) => {
+    if (isMobile) return;
+
+    // ZOOM OUT
+    if (entered && window.scrollY <= 0 && e.deltaY < 0) {
+      e.preventDefault();
+
+      zoomOutAccumRef.current += e.deltaY * -4;
+
+      if (Math.abs(zoomOutAccumRef.current) >= notchSize) {
+        scaleRef.current /= zoomStep;
+        scaleRef.current = Math.max(1, scaleRef.current);
+
+        heroRef.current.style.transform =
+          `scale(${scaleRef.current.toFixed(3)})`;
+
+        if (scaleRef.current < 1.05) {
+          setEntered(false);
+          setZoomingOut(false);
+          window.scrollTo(0, 0);
+        }
+
+        zoomOutAccumRef.current = 0;
+      }
+
+      return;
     }
 
-    const handleWheel = (e) => {
-      // ZOOM OUT
-      if (entered && window.scrollY === 0 && e.deltaY < 0) {
-        e.preventDefault();
+    // ZOOM IN
+    if (!entered) {
+      e.preventDefault();
+      wheelAccumRef.current += e.deltaY * 4;
 
-        zoomOutAccumRef.current += e.deltaY * -4.5;
+      if (Math.abs(wheelAccumRef.current) >= notchSize) {
+        const dir = Math.sign(wheelAccumRef.current);
 
-        if (Math.abs(zoomOutAccumRef.current) >= notchSize) {
-          scaleRef.current /= zoomStep;
-          scaleRef.current = Math.max(1, scaleRef.current);
+        scaleRef.current *= Math.pow(zoomStep, dir);
+        scaleRef.current = Math.max(1, scaleRef.current);
 
-          heroRef.current.style.transform = `scale(${scaleRef.current.toFixed(3)})`;
+        heroRef.current.style.transform =
+          `scale(${scaleRef.current.toFixed(3)})`;
 
-          if (scaleRef.current < 1.001) {
-            setEntered(false);
-            setZoomingOut(false);
-            window.scrollTo(0, 0);
-          }
-
-          zoomOutAccumRef.current = 0;
+        if (scaleRef.current * 100 >= triggerZoom) {
+          setEntered(true);
+          setTimeout(() => window.scrollTo(0, 1), 50);
         }
 
-        return;
+        wheelAccumRef.current = 0;
+      }
+    }
+  };
+
+  /* ---------------- MOBILE TOUCH ---------------- */
+  let touchStartY = 0;
+  let touchDelta = 0;
+
+  const mobileZoomStep = 2.8;      // smaller than desktop
+  const mobileTrigger = 3200;      // lower trigger
+  const mobileThreshold = 25;      // swipe sensitivity
+
+  const handleTouchStart = (e) => {
+    touchStartY = e.touches[0].clientY;
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isMobile) return;
+
+    const currentY = e.touches[0].clientY;
+    touchDelta = touchStartY - currentY;
+
+    // ZOOM IN (swipe up)
+    if (!entered && touchDelta > mobileThreshold) {
+      scaleRef.current *= mobileZoomStep;
+      scaleRef.current = Math.min(scaleRef.current, 35); // limit for mobile
+
+      heroRef.current.style.transform =
+        `scale(${scaleRef.current.toFixed(3)})`;
+
+      if (scaleRef.current * 100 >= mobileTrigger) {
+        setEntered(true);
+        setTimeout(() => window.scrollTo(0, 1), 50);
       }
 
-      // ZOOM IN
-      if (!entered) {
-        e.preventDefault();
-        wheelAccumRef.current += e.deltaY * 4.5;
+      touchStartY = currentY;
+    }
 
-        if (Math.abs(wheelAccumRef.current) >= notchSize) {
-          const dir = Math.sign(wheelAccumRef.current);
+    // ZOOM OUT (swipe down at top)
+    if (entered && window.scrollY <= 0 && touchDelta < -mobileThreshold) {
+      scaleRef.current /= mobileZoomStep;
+      scaleRef.current = Math.max(1, scaleRef.current);
 
-          scaleRef.current *= Math.pow(zoomStep, dir);
-          scaleRef.current = Math.max(1, scaleRef.current);
+      heroRef.current.style.transform =
+        `scale(${scaleRef.current.toFixed(3)})`;
 
-          heroRef.current.style.transform = `scale(${scaleRef.current.toFixed(3)})`;
-
-          if (scaleRef.current * 100 >= triggerZoom) {
-            setEntered(true);
-            setTimeout(() => window.scrollTo(0, 1), 50);
-          }
-
-          wheelAccumRef.current = 0;
-        }
+      if (scaleRef.current <= 1.05) {
+        setEntered(false);
+        setZoomingOut(false);
+        window.scrollTo(0, 0);
       }
-    };
 
-    document.addEventListener("wheel", handleWheel, { passive: false });
-    return () => document.removeEventListener("wheel", handleWheel);
-  }, [entered]);
+      touchStartY = currentY;
+    }
+  };
+
+  document.addEventListener("wheel", handleWheel, { passive: false });
+
+  document.addEventListener("touchstart", handleTouchStart, {
+    passive: true,
+  });
+
+  document.addEventListener("touchmove", handleTouchMove, {
+    passive: true,
+  });
+
+  return () => {
+    document.removeEventListener("wheel", handleWheel);
+    document.removeEventListener("touchstart", handleTouchStart);
+    document.removeEventListener("touchmove", handleTouchMove);
+  };
+}, [entered]);
 
   // ================= AUTO CENTER SECTIONS =================
   useEffect(() => {
