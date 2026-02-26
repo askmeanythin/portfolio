@@ -79,6 +79,17 @@ body {
   padding-bottom: 0 !important;
 }
 
+/* ===== PILL NAV — always visible on top ===== */
+.custom-nav {
+  position: fixed;        /* ✅ stays on screen while scrolling */
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  width: auto;
+  max-width: 95vw;
+}
+
 /* ===== ABOUT ===== */
 .about-section {
   min-height: unset;
@@ -99,7 +110,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.3em;
+  gap: 0.15em;            /* ✅ was 0.3em — tighter spacing */
   line-height: 1.2;
 }
 
@@ -112,6 +123,7 @@ body {
   font-weight: 800;
   display: inline !important;
   vertical-align: middle;
+  margin-left: 0.15em;    /* ✅ small breathing room after "I'm" */
 }
 
 .about-name-gradient .text-content {
@@ -291,6 +303,11 @@ body {
 
   .about-title {
     font-size: 32px;
+    gap: 0.1em;           /* ✅ tighter on mobile too */
+  }
+
+  .about-name-gradient {
+    margin-left: 0.1em;   /* ✅ slight adjustment for mobile */
   }
 
   .about-text {
@@ -369,6 +386,7 @@ body {
 
   .about-title {
     font-size: 44px;
+    gap: 0.12em;          /* ✅ tighter on tablet too */
   }
 
   .about-text {

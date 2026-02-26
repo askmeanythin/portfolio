@@ -33,6 +33,7 @@ function App() {
   const scaleRef = useRef(1);
   const wheelAccumRef = useRef(0);
   const zoomOutAccumRef = useRef(0);
+  const wheelStartScrollYRef = useRef(0);
 
   const scrollTimerRef = useRef(null);
   const isAutoScrollingRef = useRef(false);
@@ -136,12 +137,30 @@ function App() {
 
     const zoomStepDesktop = 3.2;
 
+    let wheelScrollSnapY = 0;
+    let wheelGestureActive = false;
+    let wheelResetTimer = null;
+
     // ===== DESKTOP WHEEL =====
     const handleWheel = (e) => {
       if (isMobile) return;
 
-      // ✅ Only zoom out when truly at top of page
-      if (entered && window.scrollY <= 0 && e.deltaY < 0) {
+      if (!wheelGestureActive) {
+        wheelGestureActive = true;
+        wheelScrollSnapY = window.scrollY;
+      }
+
+      clearTimeout(wheelResetTimer);
+      wheelResetTimer = setTimeout(() => {
+        wheelGestureActive = false;
+        wheelScrollSnapY = 0;
+        zoomOutAccumRef.current = 0;
+      }, 200);
+
+      if (entered && e.deltaY < 0) {
+        if (wheelScrollSnapY > 0) return;
+        if (window.scrollY > 0) return;
+
         e.preventDefault();
 
         zoomOutAccumRef.current += e.deltaY * -4;
@@ -164,7 +183,7 @@ function App() {
         return;
       }
 
-      if (!entered) {
+      if (!entered && e.deltaY > 0) {
         e.preventDefault();
         wheelAccumRef.current += e.deltaY * 4;
 
@@ -189,12 +208,12 @@ function App() {
 
     // ===== TOUCH =====
     let touchStartY = 0;
-    let touchStartScrollY = 0;   // ✅ snapshot scrollY when finger lands
+    let touchStartScrollY = 0;
     let touchTriggered = false;
 
     const handleTouchStart = (e) => {
       touchStartY = e.touches[0].clientY;
-      touchStartScrollY = window.scrollY;  // ✅ capture scroll at touch start
+      touchStartScrollY = window.scrollY;
       touchTriggered = false;
     };
 
@@ -203,9 +222,8 @@ function App() {
       if (touchTriggered) return;
 
       const currentY = e.touches[0].clientY;
-      const delta = touchStartY - currentY; // positive = swipe up
+      const delta = touchStartY - currentY;
 
-      // ✅ ZOOM IN — swipe up on hero page
       if (!entered && delta > 10) {
         touchTriggered = true;
 
@@ -238,13 +256,11 @@ function App() {
         return;
       }
 
-      // ✅ ZOOM OUT — only if:
-      // finger started at scroll top AND page is still at top AND swiping down
       if (
         entered &&
-        touchStartScrollY === 0 &&   // ✅ was at top when touch began
-        window.scrollY === 0 &&      // ✅ still at top now
-        delta < -10                  // ✅ swiping down
+        touchStartScrollY === 0 &&
+        window.scrollY === 0 &&
+        delta < -10
       ) {
         touchTriggered = true;
 
@@ -287,6 +303,7 @@ function App() {
       document.removeEventListener("wheel", handleWheel);
       document.removeEventListener("touchstart", handleTouchStart);
       document.removeEventListener("touchmove", handleTouchMove);
+      clearTimeout(wheelResetTimer);
     };
   }, [entered]);
 
@@ -297,7 +314,6 @@ function App() {
     const W = window.innerWidth;
     const H = window.innerHeight;
 
-    // ✅ Only true PC-like screens
     const isPC = W >= 1024 && W / H >= 1.4;
     if (!isPC) return;
 
@@ -312,7 +328,7 @@ function App() {
         Math.min(rect.bottom, windowHeight) - Math.max(rect.top, 0);
       const visibleRatio = visibleAmount / rect.height;
 
-      if (visibleRatio > 0.6 && visibleRatio < 1.0) {
+      if (visibleRatio > 0.8 && visibleRatio < 1.0) {
         isAutoScrollingRef.current = true;
 
         const absoluteTop = rect.top + window.scrollY;
@@ -352,6 +368,36 @@ function App() {
   return (
     <ClickSpark sparkColor="#000" sparkSize={10} sparkRadius={20} sparkCount={10} duration={500}>
       <>
+        {/* ✅ NAV — single instance, fixed, always on top, shows only after entered */}
+        {entered && (
+          <div style={{
+            position: "fixed",
+            top: "16px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 1000,
+            width: "auto",
+            maxWidth: "95vw"
+          }}>
+            <PillNav
+              logo={logo}
+              logoAlt="Company Logo"
+              items={[
+                { label: "Home", onClick: () => handleNavClick("home") },
+                { label: "About", onClick: () => handleNavClick("about") },
+                { label: "Services", onClick: () => handleNavClick("services") },
+                { label: "Contact", onClick: () => handleNavClick("contact") }
+              ]}
+              ease="power2.out"
+              baseColor="#000000"
+              pillColor="#ffffff"
+              hoveredPillTextColor="#ffffff"
+              pillTextColor="#000000"
+              initialLoadAnimation={false}
+            />
+          </div>
+        )}
+
         {/* HERO */}
         <div className={`hero ${entered && !zoomingOut ? "hero-hidden" : ""}`}>
           <h1 ref={heroRef} className="name">
@@ -386,35 +432,17 @@ function App() {
         {/* SECOND PAGE */}
         {entered && (
           <div className="real-page">
-            <PillNav
-              logo={logo}
-              logoAlt="Company Logo"
-              items={[
-                { label: "Home", onClick: () => handleNavClick("home") },
-                { label: "About", onClick: () => handleNavClick("about") },
-                { label: "Services", onClick: () => handleNavClick("services") },
-                { label: "Contact", onClick: () => handleNavClick("contact") }
-              ]}
-              className="custom-nav"
-              ease="power2.out"
-              baseColor="#000000"
-              pillColor="#ffffff"
-              hoveredPillTextColor="#ffffff"
-              pillTextColor="#000000"
-              initialLoadAnimation={false}
-            />
 
             {/* ABOUT */}
             <section ref={aboutRef} className="section about-section">
               <div className="about-container">
                 <h1 className="about-title">
-                  Hi, I'm{" "}
+                  Hi, I'm&nbsp;
                   <GradientText
                     colors={["#000000", "#554c4c", "#766262", "#4b3d3d", "#000000"]}
                     animationSpeed={2}
                     showBorder={false}
                     className="about-name-gradient"
-                    style={{ display: "inline" }}
                   >
                     Priyanshu Gautam
                   </GradientText>
