@@ -1,18 +1,46 @@
 <!doctype html>
 <html lang="en">
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <head>
     <meta charset="UTF-8" />
 
-    <!-- ✅ Your tab icon -->
+    <!-- ✅ Viewport — must be only once, inside head -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- ✅ Tab icon -->
     <link rel="icon" type="image/png" href="/favicon.png" />
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- ✅ Your tab name -->
+    <!-- ✅ Tab title -->
     <title>Priyanshu Gautam</title>
+
+    <!-- ✅ SEO basics -->
+    <meta name="description" content="Priyanshu Gautam — Computer Science student at VIT Vellore, passionate about Cybersecurity, Ethical Hacking, and building interactive web experiences." />
+    <meta name="author" content="Priyanshu Gautam" />
+    <meta name="keywords" content="Priyanshu Gautam, Portfolio, Cybersecurity, Ethical Hacking, VIT Vellore, React, Web Developer" />
+
+    <!-- ✅ Open Graph — looks good when shared on WhatsApp, LinkedIn etc -->
+    <meta property="og:title" content="Priyanshu Gautam — Portfolio" />
+    <meta property="og:description" content="CS Student | Cybersecurity & Ethical Hacking | VIT Vellore" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/favicon.png" />
+
+    <!-- ✅ Disable pull-to-refresh + overscroll via meta for older browsers -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <style>
+      /* ✅ Earliest possible overscroll disable — before CSS loads */
+      html, body {
+        overscroll-behavior-y: none;
+        overscroll-behavior-x: none;
+        overflow-x: hidden;
+        margin: 0;
+        padding: 0;
+        height: 100%;
+      }
+    </style>
   </head>
+
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>

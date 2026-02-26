@@ -10,6 +10,8 @@ body {
   background-image: radial-gradient(black 1px, transparent 1px);
   background-size: 20px 20px;
   overflow-x: hidden;
+  overscroll-behavior-y: none;
+  overscroll-behavior-x: none;
 }
 
 /* ===== HERO ===== */
