@@ -33,6 +33,7 @@ function App() {
   const scaleRef = useRef(1);
   const wheelAccumRef = useRef(0);
   const zoomOutAccumRef = useRef(0);
+
   const scrollTimerRef = useRef(null);
   const isAutoScrollingRef = useRef(false);
 
@@ -326,7 +327,7 @@ function App() {
         Math.min(rect.bottom, windowHeight) - Math.max(rect.top, 0);
       const visibleRatio = visibleAmount / rect.height;
 
-      if (visibleRatio > 0.8 && visibleRatio < 1.0) {
+      if (visibleRatio > 0.6 && visibleRatio < 1.0) {
         isAutoScrollingRef.current = true;
 
         const absoluteTop = rect.top + window.scrollY;
@@ -366,7 +367,7 @@ function App() {
   return (
     <ClickSpark sparkColor="#000" sparkSize={10} sparkRadius={20} sparkCount={10} duration={500}>
       <>
-        {/* ✅ NAV — single instance, fixed, always on top, shows only after entered */}
+        {/* ✅ NAV — fixed, single instance, Resume inside PillNav */}
         {entered && (
           <div style={{
             position: "fixed",
@@ -379,12 +380,13 @@ function App() {
           }}>
             <PillNav
               logo={logo}
-              logoAlt="Company Logo"
+              logoAlt="Priyanshu Logo"
               items={[
                 { label: "Home", onClick: () => handleNavClick("home") },
                 { label: "About", onClick: () => handleNavClick("about") },
                 { label: "Services", onClick: () => handleNavClick("services") },
-                { label: "Contact", onClick: () => handleNavClick("contact") }
+                { label: "Contact", onClick: () => handleNavClick("contact") },
+                { label: "Resume ↗", onClick: () => window.open("/resume.html", "_blank") }
               ]}
               ease="power2.out"
               baseColor="#000000"
@@ -478,14 +480,6 @@ function App() {
             <section ref={servicesRef} className="section services-section">
               <div className="services-header">
                 <h1 className="section-title">Services</h1>
-                <a
-                  href="/resume.pdf"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="resume-btn"
-                >
-                  Resume ↗
-                </a>
               </div>
               <div className="projects-grid">
                 {projects.map((project, index) => (
