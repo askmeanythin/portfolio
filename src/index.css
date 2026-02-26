@@ -306,3 +306,22 @@ body {
     font-size: 50px;
   }
 }
+/* ✅ GradientText name sizing — responsive */
+.about-name-gradient {
+  font-size: inherit;       /* matches about-title size */
+  font-weight: 800;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.about-name-gradient .text-content {
+  font-size: inherit;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+  .about-name-gradient {
+    font-size: inherit;     /* auto scales with about-title on mobile */
+  }
+}
