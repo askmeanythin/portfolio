@@ -40,8 +40,8 @@ function App() {
   const [entered, setEntered] = useState(false);
   const [zoomingOut, setZoomingOut] = useState(false);
 
-  const notchSize = 120;        // ✅ was 150 — more responsive
-  const triggerZoom = 9112;
+  const notchSize = 80;
+  const triggerZoom = 10000;
 
   // ================= LOGO DATA =================
   const techLogos = [
@@ -74,7 +74,6 @@ function App() {
       services: servicesRef,
       contact: contactRef
     };
-
     map[section]?.current?.scrollIntoView({
       behavior: "smooth",
       block: "start"
@@ -99,10 +98,9 @@ function App() {
     }
 
     if (!entered) {
-      scaleRef.current = 91.125;
+      scaleRef.current = 100;
       heroRef.current.style.transform = `scale(${scaleRef.current})`;
       setEntered(true);
-
       setTimeout(() => scrollToSection(section), 100);
     } else {
       scrollToSection(section);
@@ -119,32 +117,25 @@ function App() {
       const gRect = g.getBoundingClientRect();
       const originX =
         ((gRect.left - heroRect.left + gRect.width / 2) /
-          heroRect.width) *
-        100;
+          heroRect.width) * 100;
       hero.style.transformOrigin = `${originX}% 50%`;
     }
 
     const W = window.innerWidth;
     const H = window.innerHeight;
 
-    // ✅ Device classification
     const isPC = W >= 1024 && W / H >= 1.4;
     const isMobile = W <= 768;
     const isLowGPU = !isPC;
 
-    // ✅ Smooth transition tuned per device
+    // ✅ Transition per device
     if (hero) {
       hero.style.transition = isLowGPU
-        ? "transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94)"
+        ? "transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)"
         : "transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
     }
 
-    // ✅ Zoom params per device
     const zoomStepDesktop = 3.2;
-    const zoomStepMobile = 1.8;     // was 2.8 — smoother on touch
-    const mobileThreshold = 12;     // was 25 — more sensitive
-    const mobileTrigger = 3200;
-    const mobileCap = 35;
 
     // ===== DESKTOP WHEEL =====
     const handleWheel = (e) => {
@@ -196,55 +187,87 @@ function App() {
       }
     };
 
-    // ===== TOUCH (mobile/tablet) =====
+    // ===== TOUCH — ONE SWIPE TRIGGERS FULL ZOOM =====
     let touchStartY = 0;
-    let lastTouchTime = 0;
+    let touchTriggered = false;   // ✅ prevents double trigger
 
     const handleTouchStart = (e) => {
       touchStartY = e.touches[0].clientY;
-      lastTouchTime = Date.now();
+      touchTriggered = false;
     };
 
     const handleTouchMove = (e) => {
       if (!isMobile) return;
+      if (touchTriggered) return;   // ✅ only fire once per swipe
 
       const currentY = e.touches[0].clientY;
       const delta = touchStartY - currentY;
-      const now = Date.now();
 
-      // ✅ Throttle to every 60ms — reduces GPU repaint pressure
-      if (now - lastTouchTime < 60) return;
-      lastTouchTime = now;
+      // ✅ Swipe UP even slightly → instantly zoom to 10000% and enter
+      if (!entered && delta > 10) {
+        touchTriggered = true;
 
-      if (!entered && delta > mobileThreshold) {
-        scaleRef.current *= zoomStepMobile;
-        scaleRef.current = Math.min(scaleRef.current, mobileCap);
+        // ✅ Animate zoom in steps using RAF for smooth visual effect
+        const targetScale = 100; // 100 * 100 = 10000%
+        const startScale = scaleRef.current;
+        const duration = 600; // ms
+        const startTime = performance.now();
 
-        heroRef.current.style.transform =
-          `scale(${scaleRef.current.toFixed(3)})`;
+        const animateZoom = (now) => {
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          // ease-in-out curve
+          const ease = progress < 0.5
+            ? 2 * progress * progress
+            : -1 + (4 - 2 * progress) * progress;
 
-        if (scaleRef.current * 100 >= mobileTrigger) {
-          setEntered(true);
-          setTimeout(() => window.scrollTo(0, 1), 50);
-        }
+          scaleRef.current = startScale + (targetScale - startScale) * ease;
+          heroRef.current.style.transform =
+            `scale(${scaleRef.current.toFixed(3)})`;
 
-        touchStartY = currentY;
+          if (progress < 1) {
+            requestAnimationFrame(animateZoom);
+          } else {
+            scaleRef.current = targetScale;
+            setEntered(true);
+            setTimeout(() => window.scrollTo(0, 1), 50);
+          }
+        };
+
+        requestAnimationFrame(animateZoom);
       }
 
-      if (entered && window.scrollY <= 0 && delta < -mobileThreshold) {
-        scaleRef.current /= zoomStepMobile;
-        scaleRef.current = Math.max(1, scaleRef.current);
+      // ✅ Swipe DOWN at top → zoom back out instantly and return to hero
+      if (entered && window.scrollY <= 0 && delta < -10) {
+        touchTriggered = true;
 
-        heroRef.current.style.transform =
-          `scale(${scaleRef.current.toFixed(3)})`;
+        const startScale = scaleRef.current;
+        const targetScale = 1;
+        const duration = 500;
+        const startTime = performance.now();
 
-        if (scaleRef.current <= 1.05) {
-          setEntered(false);
-          setZoomingOut(false);
-          window.scrollTo(0, 0);
-        }
+        const animateZoomOut = (now) => {
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const ease = progress < 0.5
+            ? 2 * progress * progress
+            : -1 + (4 - 2 * progress) * progress;
 
-        touchStartY = currentY;
+          scaleRef.current = startScale + (targetScale - startScale) * ease;
+          heroRef.current.style.transform =
+            `scale(${scaleRef.current.toFixed(3)})`;
+
+          if (progress < 1) {
+            requestAnimationFrame(animateZoomOut);
+          } else {
+            scaleRef.current = 1;
+            setEntered(false);
+            setZoomingOut(false);
+            window.scrollTo(0, 0);
+          }
+        };
+
+        requestAnimationFrame(animateZoomOut);
       }
     };
 
@@ -266,9 +289,9 @@ function App() {
     const W = window.innerWidth;
     const H = window.innerHeight;
 
-    // ✅ Only PC-like screens: wide + landscape aspect ratio
+    // ✅ Only true PC-like screens
     const isPC = W >= 1024 && W / H >= 1.4;
-    if (!isPC) return;  // ← exits for mobile, tablet, odd dimensions
+    if (!isPC) return;
 
     const tryAutoScroll = (ref, factor) => {
       const el = ref.current;
