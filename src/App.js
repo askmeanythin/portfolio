@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Analytics } from '@vercel/analytics/react';
 import "./index.css";
 
 import PillNav from "./assets/PillNav";
@@ -560,6 +561,7 @@ function App() {
 
           </div>
         )}
+        <Analytics />
       </>
     </ClickSpark>
   );
